@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>All Complaints</title>
+  {% load static %}
+  {% load crispy_forms_tags %}
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="{% static 'GRsystem/css/simple-sidebar.css' %}" rel="stylesheet">
+
+  <style>
+    /* Your custom styles here */
+    td.color_1 {
+      background-color: #7FFF00;
+    }
+
+    td.color_2 {
+      background-color: yellow;
+    }
+
+    td.color_3 {
+      background-color: red;
+    }
+
+    .navbar {
+      background-color: black;
+    }
+
+    .nav-link {
+      color: white;
+    }
+
+    .nav-link:hover {
+      font-weight: 600;
+      color: black;
+      background-color: white;
+      transition: .5s;
+      border-radius: 5px;
+    }
+
+    .navbar-brand {
+      color: white;
+    }
+
+    .navbar-brand:hover {
+      color: white;
+    }
+
+    .navbar-nav {
+      font-size: 20px;
+    }
+
+    footer {
+      font-size: large;
+      font-style: italic;
+      color: black;
+      border: 2px solid white;
+      background-color: rgb(247, 79, 79);
+    }
+
+    footer a {
+      font-size: 20px;
+      color: white;
+    }
+
+    footer a:hover {
+      transition: .5s;
+      background: yellow;
+      text-decoration: none;
+      color: black;
+    }
+
+    /* Add your other styles here */
+  </style>
+</head>
+
+<nav class="navbar navbar-expand-xl">
+  <a class="navbar-brand" href="">CUGRsystem</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse"
+    aria-controls="navbarSupportedContent" aria-expanded="true" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/aboutus/">About</a>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <ul class="nav navbar-nav navbar-right">
+        {% if user.is_authenticated and user.profile.type_user == 'student' %}
+        <li class="nav-item">
+          <a class="nav-link" href="/dashboard/"><span class="fi-account-login"></span>Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/logout/">Logout</a>
+        </li>
+        {% elif user.is_authenticated and user.profile.type_user == 'grievance' %}
+        <li class="nav-item">
+          <a class="nav-link" href="/allcomplaints/"><span class="fi-account-login"></span>Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/logout/">Logout</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="/register/"><span class="fi-account-login"></span>Register</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/login/">Login</a>
+        </li>
+        {% endif %}
+      </ul>
+    </form>
+  </div>
+</nav>
+
+<body
+  style="font-family: poppins; background-color: #8EC5FC; background-image: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%);">
+
+
+  <div class="d-flex" id="wrapper">
+    <!-- Sidebar -->
+    <div class="bg-light border-right" id="sidebar-wrapper">
+      <div class="sidebar-heading">CUGRSystem</div>
+      <div class="list-group list-group-flush">
+        {% if user.is_authenticated %}
+        <a href="" class="list-group-item list-group-item-action active"> Welcome : {{user.username}} </a>
+        <a href='/counter/' class="list-group-item list-group-item-action">Statistics</a>
+        <a href='/passwords/' class="list-group-item list-group-item-action">Password Reset</a>
+        <a href="/allcomplaints/" class="list-group-item list-group-item-action">Complaints</a>
+        <a href="/solved/" class="list-group-item list-group-item-action">Solved</a>
+        {% endif %}
+      </div>
+    </div>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <button class="btn btn-primary" id="menu-toggle">DashBoard</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+      </nav>
+      <br>
+      <!-- Your content here -->
+      <style>
+        /* Your additional styles here */
+      </style>
+      {% block content %}
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-3">
+                <h4 class="text-primary"><b>Statistics</b></h4>
+                <hr>
+              </div>
+            </div>
+            <center>
+              <div class="row m-1">
+                <div class="card" style="width: 18rem;">
+                  <div class="card-body">
+                    <h5 class="card-title">Total Complaints:</h5>
+                    <br>
+                    <h1 class="card-subtitle mb-2 text-muted">{{ total }}</h1>
+                  </div>
+                </div>
+                <div class="card" style="width: 18rem;">
+                  <div class="card-body">
+                    <h5 class="card-title">UnSolved Complaints:</h5>
+                    <br>
+                    <h1 class="card-subtitle mb-2 text-muted">{{ unsolved }}</h1>
+                  </div>
+                </div>
+                <div class="card" style="width: 18rem;">
+                  <div class="card-body">
+                    <h5 class="card-title">Solved Complaints:</h5>
+                    <br>
+                    <h1 class="card-subtitle mb-2 text-muted">{{ solved}}</h1>
+                  </div>
+                </div>
+              </div>
+            </center>
+            <div id="container"></div>
+            <br>
+          </div>
+        </div>
+      </div>
+      <script src="https://code.highcharts.com/highcharts.js"></script>
+      {% spaceless %}
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          Highcharts.chart('container', {
+            chart: {
+              type: 'column'
+            },
+            title: {
+              text: 'Complaints Statistics'
+            },
+            xAxis: {
+              categories: [
+                {% for entry in dataset %}
+                        '{{ entry.Type_of_complaint }}'{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                ]
+            },
+          yAxis: {
+          title: {
+            text: 'Number of Complaints'
+          }
+        },
+          series: [
+          {
+            name: 'Total',
+            data: [
+              {% for entry in dataset %}
+                            {{ entry.total }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+                    ],
+        color: 'Orange'
+                },
+        {
+          name: 'Solved',
+            data: [
+              {% for entry in dataset %}
+        {{ entry.solved }} {% if not forloop.last %}, {% endif %}
+        {% endfor %}
+                    ],
+        color: 'green'
+                },
+        {
+          name: 'UnSolved',
+            data: [
+              {% for entry in dataset %}
+        {{ entry.notsolved }} {% if not forloop.last %}, {% endif %}
+        {% endfor %}
+                    ],
+        color: 'red'
+                },
+        {
+          name: 'Inprogress',
+            data: [
+              {% for entry in dataset %}
+        {{ entry.inprogress }} {% if not forloop.last %}, {% endif %}
+        {% endfor %}
+                    ],
+        color: 'yellow'
+                }
+            ]
+        });
+    });
+      </script>
+      {% endspaceless %}
+      {% endblock %}
+      <br>
+      <br>
+    </div>
+    <!-- /#page-content-wrapper -->
+  </div>
+  <!-- /#wrapper -->
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.8/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+  <!-- Menu Toggle Script -->
+  <script>
+    $("#menu-toggle").click(function (e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+    });
+  </script>
+
+  <footer class="fixed-bottom" style="height: 75px; display: flex; align-items: center; justify-content: center;">
+    <div>
+      <center>
+        Copyright &copy; Christ University Grievance Cell
+        <p>contact us: <a href="https://christuniversity.in/">christuniversity.in</a></p>
+      </center>
+    </div>
+  </footer>
+</body>
+
+</html>
